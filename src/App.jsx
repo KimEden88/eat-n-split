@@ -1,35 +1,132 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
+import './index.css';
+
+const initialFriends = [
+  {
+    id: 118836,
+    name: 'Clark',
+    image: 'https://I.pravatar.cc/48?u=118836',
+    balance: -7,
+  },
+  {
+    id: 933372,
+    name: 'Sarah',
+    image: 'https://I.pravatar.cc/48?u=933372',
+    balance: 20,
+  },
+  {
+    id: 499476,
+    name: 'Anthony',
+    image: 'https://I.pravatar.cc/48?u=499476',
+    balance: 0,
+  },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [showAddFriend, setShowAddFriend] = useState(false);
+
+  function handleShowAddFriend() {
+    setShowAddFriend((show) => !show);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app">
+      <div className="sidebar">
+        <FriendsList />
+        {showAddFriend && <FormAddFriend />}
+        <Button onClick={handleShowAddFriend}>
+          {!showAddFriend ? 'Add Friend' : 'close'}
+        </Button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <FormSplitBill />
+    </div>
+  );
 }
 
-export default App
+function FriendsList() {
+  const friends = initialFriends;
+  return (
+    <ul>
+      {friends.map((friend) => (
+        <Friend
+          friend={friend}
+          key={friend.id}
+        />
+      ))}
+    </ul>
+  );
+}
+
+function Friend({ friend }) {
+  return (
+    <li>
+      <img
+        src={friend.image}
+        alt={friend.name}
+      />
+      <h3>{friend.name}</h3>
+      {friend.balance < 0 && (
+        <p className="red">
+          You owe {friend.name} {Math.abs(friend.balance)}€
+        </p>
+      )}
+      {friend.balance > 0 && (
+        <p className="green">
+          {friend.name} owes you {Math.abs(friend.balance)}€
+        </p>
+      )}
+      {friend.balance === 0 && <p>You and {friend.name} are even</p>}
+      <Button>Select</Button>
+    </li>
+  );
+}
+
+function Button({ children, onClick }) {
+  return (
+    <button
+      className="button"
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FormAddFriend() {
+  return (
+    <form className="form-add-friend">
+      <label>👥 Friend name</label>
+      <input type="text" />
+      <label>🎥 Image URL</label>
+      <input type="text" />
+      <Button>Add</Button>
+    </form>
+  );
+}
+
+function FormSplitBill() {
+  return (
+    <form className="form-split-bill">
+      <h2>Split the bill with X</h2>
+
+      <label>🏷️ Bill Value</label>
+      <input type="text" />
+      <label>👤 Your share</label>
+      <input type="text" />
+      <label>👥 X's expense</label>
+      <input
+        type="text"
+        disabled
+      />
+      <label>💰 Who is paying the bill</label>
+      <select>
+        <option value="user">You</option>
+        <option value="friend">X</option>
+      </select>
+      <Button>Split bill</Button>
+    </form>
+  );
+}
+
+export default App;
